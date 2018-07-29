@@ -19,6 +19,9 @@ public class ApplicationConfig {
   @Value("${config-service-url}")
   private String configServiceUrl;
 
+  @Value("${example-service-url}")
+  private String exampleServiceUrl;
+
   @Value("${config-service-identifier}")
   private String configServiceIdentifier;
 

@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -19,7 +22,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * Main application class.
  *
  * <p>
- *   Setups swagger documentation.
+ * Setups swagger documentation.
  * </p>
  */
 @SpringBootApplication(exclude = EmbeddedMongoAutoConfiguration.class)
@@ -53,6 +56,15 @@ public class SpringboottestApplication {
         .directModelSubstitute(LocalDate.class, String.class)//
         .select().apis(RequestHandlerSelectors.basePackage("com.pribas"))//
         .build();
+  }
+
+  /**
+   * Creates a rest template to consume REST services.
+   */
+  @Bean
+  public RestTemplate restTemplate(RestTemplateBuilder builder) {
+    return builder.setConnectTimeout(3000).setReadTimeout(3000)
+        .uriTemplateHandler(new DefaultUriBuilderFactory(applicationConfig.getExampleServiceUrl())).build();
   }
 
   private ApiInfo apiInfo() {
