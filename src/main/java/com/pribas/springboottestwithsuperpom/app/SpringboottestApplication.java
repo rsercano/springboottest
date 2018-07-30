@@ -1,13 +1,18 @@
 package com.pribas.springboottestwithsuperpom.app;
 
+import com.pribas.springboottestwithsuperpom.app.beans.Post;
 import com.pribas.springboottestwithsuperpom.app.config.ApplicationConfig;
+import com.pribas.springboottestwithsuperpom.app.handler.ExampleConsumer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -27,14 +32,16 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @SpringBootApplication(exclude = EmbeddedMongoAutoConfiguration.class)
 @EnableSwagger2
-public class SpringboottestApplication {
-
-  @Autowired
-  public SpringboottestApplication(ApplicationConfig applicationConfig) {
-    this.applicationConfig = applicationConfig;
-  }
+public class SpringboottestApplication implements ApplicationRunner {
 
   private final ApplicationConfig applicationConfig;
+  private final ApplicationContext applicationContext;
+
+  @Autowired
+  public SpringboottestApplication(ApplicationConfig applicationConfig, ApplicationContext applicationContext) {
+    this.applicationConfig = applicationConfig;
+    this.applicationContext = applicationContext;
+  }
 
   public static void main(String[] args) {
     SpringApplication.run(SpringboottestApplication.class, args);
@@ -72,5 +79,12 @@ public class SpringboottestApplication {
         .title(applicationConfig.getApplicationName())
         .version(applicationConfig.getBuildVersion())
         .build();
+  }
+
+  @Override
+  public void run(ApplicationArguments args) {
+    applicationContext.getBean(ExampleConsumer.class).getPost(null);
+    applicationContext.getBean(ExampleConsumer.class).getPost(Post.builder().id(1).title("foo").body("bar")
+        .userId(1).build());
   }
 }
